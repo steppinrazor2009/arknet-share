@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.local
+data/
+movies/
+public/vendor/
+*.db
+*.sqlite
+.DS_Store

@@ -1,0 +1,12 @@
+services:
+  movieshare:
+    container_name: movieshare
+    image: movieshare:latest
+    ports:
+      - "3000:3000"
+    env_file: ".env"
+    volumes:
+      - /data/Media/Movies:/app/movies
+      - /apps/movieshare/data:/app/data
+      - /apps/movieshare/transcoded:/app/transcoded
+    restart: unless-stopped
