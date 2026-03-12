@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArkNet Share</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .card {
+      background: rgba(30, 30, 50, 0.9);
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(255, 107, 107, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.5);
+      color: #ff6b6b;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .success {
+      background: rgba(107, 255, 107, 0.1);
+      border: 1px solid rgba(107, 255, 107, 0.5);
+      color: #6bff6b;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .loading {
+      text-align: center;
+      color: #aaa;
+      font-size: 14px;
+      padding: 20px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top: 3px solid #ff6b6b;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .video-container {
+      margin-bottom: 20px;
+      border-radius: 6px;
+      background: #000;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+    }
+
+    .video-container video {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 6px;
+    }
+
+    #player-loading {
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      background: rgba(0, 0, 0, 0.8) !important;
+      padding: 30px !important;
+      border-radius: 6px !important;
+      z-index: 10;
+    }
+
+    .video-info {
+      background: rgba(107, 255, 107, 0.1);
+      border: 1px solid rgba(107, 255, 107, 0.5);
+      color: #6bff6b;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .timer {
+      display: inline-block;
+      background: rgba(255, 107, 107, 0.2);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #code-input {
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>🌐 ArkNet Share</h1>
+      <p class="subtitle">Stream your movie with a one-time code</p>
+
+      <div id="form-section">
+        <div id="error-message" class="error hidden"></div>
+        <div id="loading" class="loading hidden">
+          <div class="spinner"></div>
+          <div class="loading-text" id="loading-text">Unlocking...</div>
+        </div>
+
+        <div class="form-group">
+          <label for="code-input">Enter your code:</label>
+          <input
+            type="text"
+            id="code-input"
+            placeholder="EXAMPLE"
+            autocomplete="off"
+            maxlength="8"
+          />
+        </div>
+
+        <button id="submit-btn" type="button">Unlock</button>
+      </div>
+
+      <div id="player-section" class="hidden">
+        <div class="video-info">
+          ✓ Code verified! Your access expires in <span class="timer" id="timer">--:--</span>
+        </div>
+
+        <div class="video-container">
+          <video id="player" playsinline controls></video>
+          <div id="player-loading" class="loading hidden">
+            <div class="spinner"></div>
+            <div class="loading-text">Buffering...</div>
+          </div>
+        </div>
+
+        <button id="exit-btn" type="button">Enter a Different Code</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let sessionToken = null;
+    let expiresAt = null;
+    let timerInterval = null;
+
+    const codeInput = document.getElementById('code-input');
+    const submitBtn = document.getElementById('submit-btn');
+    const formSection = document.getElementById('form-section');
+    const playerSection = document.getElementById('player-section');
+    const errorMessage = document.getElementById('error-message');
+    const loading = document.getElementById('loading');
+    const loadingText = document.getElementById('loading-text');
+    const exitBtn = document.getElementById('exit-btn');
+    const timerSpan = document.getElementById('timer');
+    const videoPlayer = document.getElementById('player');
+
+    // Helper: Show loading with custom message
+    function showLoading(message) {
+      loadingText.textContent = message;
+      loading.classList.remove('hidden');
+      submitBtn.disabled = true;
+    }
+
+    // Helper: Hide loading
+    function hideLoading() {
+      loading.classList.add('hidden');
+    }
+
+    // Get player loading element
+    const playerLoading = document.getElementById('player-loading');
+
+    // Show/hide player loading on buffer events
+    videoPlayer.addEventListener('waiting', () => {
+      playerLoading.classList.remove('hidden');
+    });
+
+    videoPlayer.addEventListener('canplay', () => {
+      playerLoading.classList.add('hidden');
+    });
+
+    videoPlayer.addEventListener('playing', () => {
+      playerLoading.classList.add('hidden');
+    });
+
+    // Enable submit button on page load
+    submitBtn.disabled = false;
+    codeInput.focus();
+
+    // Format seconds to MM:SS
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    // Update timer
+    function updateTimer() {
+      if (!expiresAt) return;
+      const now = Math.floor(Date.now() / 1000);
+      const remaining = expiresAt - now;
+      if (remaining <= 0) {
+        timerSpan.textContent = '0:00';
+        clearInterval(timerInterval);
+        showError('Session expired. Please enter a new code.');
+        return;
+      }
+      timerSpan.textContent = formatTime(remaining);
+    }
+
+    // Show error
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorMessage.classList.remove('hidden');
+      loading.classList.add('hidden');
+      submitBtn.disabled = false;
+    }
+
+    // Clear error
+    function clearError() {
+      errorMessage.classList.add('hidden');
+    }
+
+    // Redeem code
+    async function redeemCode() {
+      if (!player) {
+        showError('Player not ready. Please wait a moment.');
+        return;
+      }
+
+      const code = codeInput.value.trim().toUpperCase();
+
+      if (!code) {
+        showError('Please enter a code.');
+        return;
+      }
+
+      if (code.length !== 8) {
+        showError('Code must be 8 characters.');
+        return;
+      }
+
+      clearError();
+      showLoading('🔓 Unlocking...');
+
+      try {
+        const response = await fetch('/api/redeem', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showError(data.error || 'Failed to redeem code.');
+          return;
+        }
+
+        // Success
+        sessionToken = data.token;
+        expiresAt = data.expiresAt;
+
+        // Update loading message
+        showLoading('📽️ Loading video...');
+
+        // Set up direct MP4 streaming
+        const streamUrl = `/api/stream?token=${sessionToken}`;
+        videoPlayer.src = streamUrl;
+
+        let metadataLoaded = false;
+
+        videoPlayer.addEventListener('loadedmetadata', () => {
+          console.log('Video loaded, duration:', videoPlayer.duration);
+          metadataLoaded = true;
+          hideLoading();
+          videoPlayer.play().catch(() => {});
+        }, { once: true });
+
+        videoPlayer.addEventListener('error', () => {
+          console.error('Video error:', videoPlayer.error);
+          if (metadataLoaded) {
+            showError('Error playing video.');
+          } else {
+            showError('Error loading video.');
+          }
+        });
+
+        // Show player section with loading indicator
+        formSection.classList.add('hidden');
+        playerSection.classList.remove('hidden');
+        playerLoading.classList.remove('hidden');
+        playerLoading.querySelector('.loading-text').textContent = '📽️ Loading video...';
+
+        // Start timer
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
+
+        // Timeout: if video doesn't load in 30 seconds, show error
+        setTimeout(() => {
+          if (!metadataLoaded) {
+            videoPlayer.pause();
+            playerLoading.classList.add('hidden');
+            showError('Video took too long to load. Please check your connection.');
+            formSection.classList.remove('hidden');
+            playerSection.classList.add('hidden');
+          }
+        }, 30000);
+      } catch (err) {
+        console.error('Error:', err);
+        showError('Network error. Please try again.');
+        submitBtn.disabled = false;
+        hideLoading();
+      }
+    }
+
+    // Event listeners
+    submitBtn.addEventListener('click', redeemCode);
+    codeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') redeemCode();
+    });
+
+    exitBtn.addEventListener('click', () => {
+      // Reset
+      if (timerInterval) clearInterval(timerInterval);
+      sessionToken = null;
+      expiresAt = null;
+      codeInput.value = '';
+      videoPlayer.src = '';
+      submitBtn.disabled = false;
+      clearError();
+
+      // Show form
+      playerSection.classList.add('hidden');
+      formSection.classList.remove('hidden');
+      codeInput.focus();
+    });
+  </script>
+</body>
+</html>
